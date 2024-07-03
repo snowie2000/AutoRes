@@ -1,6 +1,7 @@
 object frmAutoRes: TfrmAutoRes
   Left = 0
   Top = 0
+  BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Auto Resolution'
   ClientHeight = 349
@@ -110,9 +111,9 @@ object frmAutoRes: TfrmAutoRes
       OnClick = rbKeepClick
     end
     object rbKeep: TRadioButton
-      Left = 161
+      Left = 163
       Top = 24
-      Width = 145
+      Width = 115
       Height = 17
       Caption = 'Keep target state'
       TabOrder = 1

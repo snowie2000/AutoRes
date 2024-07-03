@@ -518,7 +518,7 @@ var
   dpi, current: Integer;
 begin
   current := Round(Screen.PixelsPerInch * 100 / 96);
-  for I := 0 to 10 do
+  for I := 0 to 16 do
   begin
     dpi := 100 + I * 25;
     cbbDPI.Items.AddObject(IntToStr(dpi) + '%', Pointer(dpi));
