@@ -79,12 +79,12 @@ uses
 
 const
   SWC_DESKTOP = 8;
-  IID_IServiceProvider: TGUID = '{64736444-DBCF-11CE-A3F5-00AA0044DEEE}';
   ENUM_CURRENT_SETTINGS = -1;
   SPI_SETLOGICALDPIOVERRIDE = $009F;
   SPI_GETLOGICALDPIOVERRIDE = $009E;
   DpiVals: array[0..11] of DWORD = (100, 125, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500);
 
+// https://pastebin.com/S9WLMDhB
 procedure FindDesktopFolderView(const RIID: TGUID; var PPV);
 var
   ShellWindows: IShellWindows;
@@ -190,11 +190,6 @@ begin
   DevMode.dmSize := SizeOf(TDevMode);
   DP.cb := sizeof(DP);
 
-//  for I := 0 to 99 do
-//  begin
-//    if (not EnumDisplayDevices(nil, I, DP, EDD_GET_DEVICE_INTERFACE_NAME)) then
-//      break;
-
   EnumDisplaySettings(nil, DWORD(ENUM_CURRENT_SETTINGS), DevMode);
 
   // Set the new width and height in DevMode
@@ -203,14 +198,12 @@ begin
   DevMode.dmFields := DM_PELSWIDTH or DM_PELSHEIGHT;
 
   // Attempt to change the display settings
-  if ChangeDisplaySettingsEx(nil, DevMode, 0, 0, nil) = DISP_CHANGE_SUCCESSFUL then
-//      ShowMessage('Screen resolution changed successfully!')  // This might not happen due to lack of privileges
-
-  else
+  if ChangeDisplaySettingsEx(nil, DevMode, 0, 0, nil) <> DISP_CHANGE_SUCCESSFUL then
     ShowMessage('Failed to change screen resolution!');
-//  end;
 end;
 
+// discussion: https://stackoverflow.com/questions/35233182/how-can-i-change-windows-10-display-scaling-programmatically-using-c-sharp/
+// source: https://github.com/lihas/windows-DPI-scaling-sample
 function getRecommandedDPI(): Integer;
 var
   dpi: Integer;
