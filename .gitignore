@@ -1,0 +1,38 @@
+# File metadata and controls
+*.dcu  # Compiled Delphi units
+*.dof  # Object file dependencies
+*.dcc  # Compiled design-time packages
+*.dcr  # Compiled resource files (consider using .rc)
+*.cfg  # Configuration files (might be project-specific)
+*.exe  # Executable files
+*.bpl  # Borland Package Library files
+*.res  # Resource files (might be project-specific)
+
+# IDE-specific files
+*.dproj  # Delphi project files
+*.bdsproj  # C++Builder project files
+*.opt  # IDE options files
+*.local  # IDE local settings
+
+# Deployment Manager configuration
+*.dmdproj  # Deployment Manager project files
+
+# Third-party libraries (adjust based on your project)
+/lib/   # Common location for third-party libraries
+
+# IDE caches and temporary files
+*.cache
+*.log
+
+# Uncomment these for a cleaner repository (use with caution)
+# Resource files (consider using .rc for text-based resources)
+*.rcf  # Resource compiler output
+
+# Type library file (Delphi 2009+)
+*.tlb  # Type library (generated from .ridl)
+
+# Diagram Portfolio file (Delphi 7 and older)
+*.dcp  # Diagram Portfolio (if not using diagrams)
+
+# Visual LiveBindings file (Delphi XE2 and newer)
+*.lvp  # LiveBindings project (if not using LiveBindings Designer)

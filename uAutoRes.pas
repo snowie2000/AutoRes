@@ -65,6 +65,18 @@ type
     { Public declarations }
   end;
 
+  TEXEVersionData = record
+    CompanyName, FileDescription, FileVersion, InternalName, LegalCopyright, LegalTrademarks, OriginalFileName,
+      ProductName, ProductVersion, Comments: string;
+  end;
+
+  PLandCodepage = ^TLandCodepage;
+
+  TLandCodepage = record
+    wLanguage: Word;
+    wCodePage: Word;
+  end;
+
 var
   frmAutoRes: TfrmAutoRes;
 
@@ -234,8 +246,8 @@ begin
       if DpiVals[I] = recommendedDpi then
         oldIndex := I;
     end;
+    SystemParametersInfo(SPI_SETLOGICALDPIOVERRIDE, newIndex - oldIndex, nil, SPIF_UPDATEINIFILE);
   end;
-  SystemParametersInfo(SPI_SETLOGICALDPIOVERRIDE, newIndex - oldIndex, nil, SPIF_UPDATEINIFILE);
 end;
 
 function RunFromCLI(): Boolean;
@@ -273,9 +285,9 @@ begin
   bShouldWait := (cmd.restore.mode <> 1) and bShouldChange;
   if bShouldChange then
   begin
-    if res.nDPI <> cmd.target.dpi then
-      changeDPI(cmd.target.dpi);
     changeDisplayResolution(cmd.target.height, cmd.target.width);
+    if (cmd.target.dpi <> 0) and (res.nDPI <> cmd.target.dpi) then
+      changeDPI(cmd.target.dpi);
   end;
   // we are already at the optimal resolution, just launch the application and exit;
   if not bShouldWait then
@@ -310,16 +322,41 @@ begin
   case cmd.restore.mode of
     0:
       begin
-        if cmd.target.dpi <> cmd.restore.dpi then
-          changeDPI(res.nDPI);
         changeDisplayResolution(res.nHeight, res.nWidth);
+        if (cmd.target.dpi <> 0) and (cmd.target.dpi <> cmd.restore.dpi) then
+          changeDPI(res.nDPI);
       end;
     2:
       begin
-        if res.nDPI <> cmd.target.dpi then
-          changeDPI(res.nDPI);
         changeDisplayResolution(cmd.restore.height, cmd.restore.width);
+        if (cmd.restore.dpi <> 0) and (cmd.restore.dpi <> cmd.target.dpi) then
+          changeDPI(cmd.restore.dpi);
       end;
+  end;
+end;
+
+function GetEXEVersionData(const FileName: string): TEXEVersionData;
+var
+  dummy, len: DWORD;
+  buf, pntr: Pointer;
+  lang: string;
+begin
+  len := GetFileVersionInfoSize(PChar(FileName), dummy);
+  if len = 0 then
+    RaiseLastOSError;
+  GetMem(buf, len);
+  try
+    if not GetFileVersionInfo(PChar(FileName), 0, len, buf) then
+      RaiseLastOSError;
+    if not VerQueryValue(buf, '\\VarFileInfo\\Translation', pntr, len) then
+      RaiseLastOSError;
+    lang := Format('%.4x%.4x', [PLandCodepage(pntr)^.wLanguage, PLandCodepage(pntr)^.wCodePage]);
+
+    if VerQueryValue(buf, PChar('\\StringFileInfo\\' + lang + '\\FileDescription'), pntr, len) then
+      Result.FileDescription := PChar(pntr);
+    // You can add more fields here as needed
+  finally
+    FreeMem(buf);
   end;
 end;
 
@@ -414,8 +451,8 @@ begin
     Options := Options + [ofFileMustExist];
     if Execute() then
     begin
-      edtApp.Text := filename;
-      edtDir.Text := ExtractFileDir(filename);
+      edtApp.Text := FileName;
+      edtDir.Text := ExtractFileDir(FileName);
     end;
   finally
     Free;
@@ -450,7 +487,7 @@ begin
     Options := Options + [ofOverwritePrompt, ofHideReadOnly, ofNoNetworkButton, ofOverwritePrompt];
     if Execute() then
     begin
-      CreateShortcut(filename);
+      CreateShortcut(FileName);
       MessageBox(Handle, 'Shortcut created successfully!', 'AutoRes', MB_OK or MB_ICONINFORMATION);
     end;
   finally
@@ -461,7 +498,7 @@ end;
 function TfrmAutoRes.CreateShortcut(sFilename: string): Boolean;
 var
   cmd: TCmd;
-  json, b64: string;
+  json, b64, desc: string;
 begin
   if ExtractFileExt(sFilename) = '' then
     sFilename := sFilename + '.lnk';
@@ -496,7 +533,8 @@ begin
 
   json := JsonSerializer<TCmd>.ToJson(cmd).AsJSon();
   b64 := EncodeString(json);
-  Result := CreateLink(Application.ExeName, sFilename, '', '-cmd ' + b64, cmd.app);
+  desc := GetEXEVersionData(cmd.app).FileDescription;
+  Result := CreateLink(Application.ExeName, sFilename, desc, '-cmd ' + b64, cmd.app);
 end;
 
 procedure TfrmAutoRes.FormCreate(Sender: TObject);
@@ -510,17 +548,15 @@ var
   I: Integer;
   dpi, current: Integer;
 begin
-  current := Round(Screen.PixelsPerInch * 100 / 96);
+  cbbDPI.Items.AddObject('Auto', nil);
+  cbbDPI1.Items.AddObject('Auto', nil);
+  cbbDPI.ItemIndex := 0;
+  cbbDPI1.ItemIndex := 0;
   for I := 0 to 16 do
   begin
     dpi := 100 + I * 25;
     cbbDPI.Items.AddObject(IntToStr(dpi) + '%', Pointer(dpi));
     cbbDPI1.Items.AddObject(IntToStr(dpi) + '%', Pointer(dpi));
-    if current = dpi then
-    begin
-      cbbDPI.ItemIndex := I;
-      cbbDPI1.ItemIndex := I;
-    end;
   end;
 end;
 
