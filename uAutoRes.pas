@@ -3,8 +3,8 @@ unit uAutoRes;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, Generics.Collections,
-  ExtCtrls;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Generics.Collections, ExtCtrls;
 
 type
   TRes = record
@@ -66,8 +66,7 @@ type
   end;
 
   TEXEVersionData = record
-    CompanyName, FileDescription, FileVersion, InternalName, LegalCopyright, LegalTrademarks, OriginalFileName,
-      ProductName, ProductVersion, Comments: string;
+    CompanyName, FileDescription, FileVersion, InternalName, LegalCopyright, LegalTrademarks, OriginalFileName, ProductName, ProductVersion, Comments: string;
   end;
 
   PLandCodepage = ^TLandCodepage;
@@ -85,7 +84,8 @@ function RunFromCLI(): Boolean;
 implementation
 
 uses
-  ShlObj, ActiveX, ComObj, superobject, uJson, EncdDecd, ShellAPI, SHDocVw, TlHelp32;
+  ShlObj, ActiveX, ComObj, superobject, uJson, EncdDecd, ShellAPI, SHDocVw,
+  TlHelp32;
 
 {$R *.dfm}
 
@@ -130,8 +130,7 @@ begin
   OleCheck(DispView.QueryInterface(RIID, PPV));
 end;
 
-procedure ShellExecuteFromExplorer(const AFile: WideString; const AParameters: WideString = ''; const ADirectory:
-  WideString = ''; const AOperation: WideString = ''; const AShowCmd: Cardinal = SW_SHOWNORMAL);
+procedure ShellExecuteFromExplorer(const AFile: WideString; const AParameters: WideString = ''; const ADirectory: WideString = ''; const AOperation: WideString = ''; const AShowCmd: Cardinal = SW_SHOWNORMAL);
 var
   FolderView: IShellFolderViewDual;
   DispShell: IDispatch;
@@ -259,7 +258,7 @@ var
   idSet: TDictionary<DWORD, Boolean>;
   I: Integer;
   targetPid: DWORD;
-  bShouldWait, bShouldChange: Boolean;
+  bShouldWait, bShouldChangeRes, bShouldChangeDPI: Boolean;
 begin
   Result := False;
   if not FindCmdLineSwitch('cmd', sCmd) then
@@ -281,12 +280,14 @@ begin
   res.nHeight := Screen.Height;
   res.nWidth := Screen.Width;
   res.nDPI := Round(Screen.PixelsPerInch * 100 / 96);
-  bShouldChange := (res.nHeight <> cmd.target.height) or (res.nWidth <> cmd.target.width) or (res.nDPI <> cmd.target.dpi);
-  bShouldWait := (cmd.restore.mode <> 1) and bShouldChange;
-  if bShouldChange then
+  bShouldChangeRes := (res.nHeight <> cmd.target.height) or (res.nWidth <> cmd.target.width);
+  bShouldChangeDPI := ((cmd.target.dpi <> 0) and (cmd.target.dpi <> res.nDPI));
+  // should not keep state and res changed or (dpi changed and requires restoring to a non-zero target dpi) or (revert back)
+  bShouldWait := (cmd.restore.mode <> 1) and (bShouldChangeRes or (bShouldChangeDPI and (cmd.restore.mode = 0) or ((cmd.restore.mode = 2) and (cmd.restore.dpi <> 0))));
+  if bShouldChangeRes or bShouldChangeDPI then
   begin
     changeDisplayResolution(cmd.target.height, cmd.target.width);
-    if (cmd.target.dpi <> 0) and (res.nDPI <> cmd.target.dpi) then
+    if bShouldChangeDPI then
       changeDPI(cmd.target.dpi);
   end;
   // we are already at the optimal resolution, just launch the application and exit;

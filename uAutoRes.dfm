@@ -191,11 +191,11 @@ object frmAutoRes: TfrmAutoRes
       TabOrder = 0
     end
     object btn1: TButton
-      Left = 375
-      Top = 19
-      Width = 75
-      Height = 25
-      Anchors = [akTop, akRight]
+      Left = 379
+      Top = 18
+      Width = 71
+      Height = 24
+      Anchors = [akRight]
       Caption = 'Browse...'
       TabOrder = 1
       OnClick = btn1Click
