@@ -1,5 +1,5 @@
 unit uAutoRes;
-
+
 interface
 
 uses
@@ -75,6 +75,76 @@ type
     wLanguage: Word;
     wCodePage: Word;
   end;
+
+  POINTL = record
+    x: DWORD;
+    y: DWORD;
+  end;
+
+  _POINTL = POINTL;
+
+  TPOINTL = POINTL;
+
+  PPOINTL = ^POINTL;
+
+  devmodeW = record
+    dmDeviceName: array[0..CCHDEVICENAME - 1] of WCHAR;
+    dmSpecVersion: WORD;
+    dmDriverVersion: WORD;
+    dmSize: WORD;
+    dmDriverExtra: WORD;
+    dmFields: DWORD;
+    case byte of
+      1:
+        (dmOrientation: short;
+        dmPaperSize: short;
+        dmPaperLength: short;
+        dmPaperWidth: short;
+        dmScale: short;
+        dmCopies: short;
+        dmDefaultSource: short;
+        dmPrintQuality: short;
+        dmColor: short;
+        dmDuplex: short;
+        dmYResolution: short;
+        dmTTOption: short;
+        dmCollate: short;
+        dmFormName: array[0..CCHFORMNAME - 1] of wchar;
+        dmLogPixels: WORD;
+        dmBitsPerPel: DWORD;
+        dmPelsWidth: DWORD;
+        dmPelsHeight: DWORD;
+        dmDisplayFlags: DWORD;
+        dmDisplayFrequency: DWORD;
+        dmICMMethod: DWORD;
+        dmICMIntent: DWORD;
+        dmMediaType: DWORD;
+        dmDitherType: DWORD;
+        dmReserved1: DWORD;
+        dmReserved2: DWORD;
+        dmPanningWidth: DWORD;
+        dmPanningHeight: DWORD;);
+      2:
+        (dmPosition: POINTL;
+        dmDisplayOrientation: DWORD;
+        dmDisplayFixedOutput: DWORD;);
+  end;
+
+  LPDEVMODEW = ^DEVMODEW;
+
+  _DEVMODEW = DEVMODEW;
+
+  TDEVMODEW = DEVMODEW;
+
+  PDEVMODEW = LPDEVMODEW;
+
+  _devicemodeW = DEVMODEW;
+
+  devicemodeW = DEVMODEW;
+
+  TDeviceModeW = DEVMODEW;
+
+  PDeviceModeW = LPDEVMODEW;
 
 var
   frmAutoRes: TfrmAutoRes;
@@ -191,25 +261,33 @@ end;
 
 procedure changeDisplayResolution(nHeight, nWidth: Integer);
 var
-  DevMode: TDevMode;
+  DevMode: devmodeW;
   I: Integer;
   DP: TDisplayDevice;
+  dm: TDevMode absolute DevMode;
+const
+  DMDFO_DEFAULT = 0;
+  DMDFO_STRETCH = 1;
+  DMDFO_CENTER = 2;
+  DM_DISPLAYFIXEDOUTPUT = $20000000;
 begin
   // Fill the DevMode structure with current settings (important)
   FillChar(DevMode, SizeOf(DevMode), 0);
   FillChar(DP, sizeof(DP), 0);
-  DevMode.dmSize := SizeOf(TDevMode);
+  DevMode.dmSize := SizeOf(devmodeW);
   DP.cb := sizeof(DP);
 
-  EnumDisplaySettings(nil, DWORD(ENUM_CURRENT_SETTINGS), DevMode);
+  EnumDisplaySettings(nil, DWORD(ENUM_CURRENT_SETTINGS), dm);
 
   // Set the new width and height in DevMode
   DevMode.dmPelsWidth := nWidth;
   DevMode.dmPelsHeight := nHeight;
-  DevMode.dmFields := DM_PELSWIDTH or DM_PELSHEIGHT;
+  DevMode.dmDisplayFixedOutput := DMDFO_DEFAULT;
+//  DevMode.dmDriverExtra := 0;
+  DevMode.dmFields := DM_PELSWIDTH or DM_PELSHEIGHT or DM_DISPLAYFIXEDOUTPUT;
 
   // Attempt to change the display settings
-  if ChangeDisplaySettingsEx(nil, DevMode, 0, 0, nil) <> DISP_CHANGE_SUCCESSFUL then
+  if ChangeDisplaySettingsEx(nil, dm, 0, CDS_GLOBAL or CDS_UPDATEREGISTRY, nil) <> DISP_CHANGE_SUCCESSFUL then
     ShowMessage('Failed to change screen resolution!');
 end;
 
@@ -598,3 +676,4 @@ end;
 
 end.
 
+

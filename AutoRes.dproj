@@ -107,6 +107,9 @@
 					<Source>
 						<Source Name="MainSource">AutoRes.dpr</Source>
 					</Source>
+					<Parameters>
+						<Parameters Name="RunParams">-cmd eyJwYXJhbSI6IiIsImFwcCI6IkQ6XFxQcm9ncmFtIEZpbGVzXFxNUEMtQkUgeDY0XFxtcGMtYmU2NC5leGUiLCJ0YXJnZXQiOnsiZHBpIjowLCJ3aWR0aCI6NjQwLCJoZWlnaHQiOjQ4MCwiZGVwdGgiOjMyfSwicmVzdG9yZSI6eyJkcGkiOjAsIndpZHRoIjowLCJoZWlnaHQiOjAsImRlcHRoIjowLCJtb2RlIjowfSwid29ya2RpciI6IkQ6XFxQcm9ncmFtIEZpbGVzXFxNUEMtQkUgeDY0In0=</Parameters>
+					</Parameters>
 				</Delphi.Personality>
 				<Platforms>
 					<Platform value="Win32">True</Platform>
