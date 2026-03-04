@@ -17,6 +17,7 @@ type
     app: string;
     param: string;
     workdir: string;
+    icon: string;
     target: record
       dpi, height, width, depth: Integer;
     end;
@@ -49,12 +50,16 @@ type
     edtDir: TEdit;
     btnOk: TButton;
     btnClose: TButton;
+    Label1: TLabel;
+    edtIcon: TEdit;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure rbCustomClick(Sender: TObject);
     procedure rbKeepClick(Sender: TObject);
     procedure btn1Click(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
     FResolutions: TArray<TRes>;
@@ -532,6 +537,7 @@ begin
     begin
       edtApp.Text := FileName;
       edtDir.Text := ExtractFileDir(FileName);
+      edtIcon.Text := FileName;
     end;
   finally
     Free;
@@ -574,6 +580,21 @@ begin
   end;
 end;
 
+procedure TfrmAutoRes.Button1Click(Sender: TObject);
+begin
+  with TOpenDialog.Create(nil) do
+  try
+    Filter := 'Executable|*.exe|Dll|*.dll|Icon Files|*.ico';
+    Options := Options + [ofFileMustExist];
+    if Execute() then
+    begin
+      edtIcon.Text := FileName;
+    end;
+  finally
+    Free;
+  end;
+end;
+
 function TfrmAutoRes.CreateShortcut(sFilename: string): Boolean;
 var
   cmd: TCmd;
@@ -586,6 +607,7 @@ begin
   cmd.app := edtApp.Text;
   cmd.param := edtParam.Text;
   cmd.workdir := edtDir.Text;
+  cmd.icon := edtIcon.Text;
   with cmd.target, FResolutions[Integer(cbbRes.Items.Objects[cbbRes.ItemIndex])] do
   begin
     height := nHeight;
@@ -613,7 +635,7 @@ begin
   json := JsonSerializer<TCmd>.ToJson(cmd).AsJSon();
   b64 := EncodeString(json);
   desc := GetEXEVersionData(cmd.app).FileDescription;
-  Result := CreateLink(Application.ExeName, sFilename, desc, '-cmd ' + b64, cmd.app);
+  Result := CreateLink(Application.ExeName, sFilename, desc, '-cmd ' + b64, cmd.icon);
 end;
 
 procedure TfrmAutoRes.FormCreate(Sender: TObject);

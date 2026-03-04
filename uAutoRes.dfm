@@ -4,7 +4,7 @@ object frmAutoRes: TfrmAutoRes
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Auto Resolution'
-  ClientHeight = 345
+  ClientHeight = 378
   ClientWidth = 492
   Color = clBtnFace
   DoubleBuffered = True
@@ -18,7 +18,7 @@ object frmAutoRes: TfrmAutoRes
   OnCreate = FormCreate
   DesignSize = (
     492
-    345)
+    378)
   PixelsPerInch = 96
   TextHeight = 13
   object grp1: TGroupBox
@@ -31,7 +31,6 @@ object frmAutoRes: TfrmAutoRes
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitWidth = 481
     DesignSize = (
       476
       57)
@@ -67,7 +66,6 @@ object frmAutoRes: TfrmAutoRes
       Style = csDropDownList
       Anchors = [akTop, akRight]
       TabOrder = 1
-      ExplicitLeft = 305
     end
   end
   object grp2: TGroupBox
@@ -80,7 +78,6 @@ object frmAutoRes: TfrmAutoRes
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
-    ExplicitWidth = 481
     DesignSize = (
       476
       98)
@@ -149,23 +146,21 @@ object frmAutoRes: TfrmAutoRes
       Anchors = [akTop, akRight]
       Enabled = False
       TabOrder = 4
-      ExplicitLeft = 305
     end
   end
   object grp3: TGroupBox
-    Left = 8
-    Top = 184
+    Left = 7
+    Top = 179
     Width = 477
-    Height = 114
+    Height = 150
     Anchors = [akLeft, akTop, akRight]
     Caption = 'Application'
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 2
-    ExplicitWidth = 482
     DesignSize = (
       477
-      114)
+      150)
     object lbl2: TLabel
       Left = 16
       Top = 24
@@ -187,6 +182,13 @@ object frmAutoRes: TfrmAutoRes
       Height = 13
       Caption = 'Workdir:'
     end
+    object Label1: TLabel
+      Left = 17
+      Top = 114
+      Width = 25
+      Height = 13
+      Caption = 'Icon:'
+    end
     object edtApp: TEdit
       Left = 96
       Top = 21
@@ -194,7 +196,6 @@ object frmAutoRes: TfrmAutoRes
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
-      ExplicitWidth = 277
     end
     object btn1: TButton
       Left = 374
@@ -205,7 +206,6 @@ object frmAutoRes: TfrmAutoRes
       Caption = 'Browse...'
       TabOrder = 1
       OnClick = btn1Click
-      ExplicitLeft = 379
     end
     object edtParam: TEdit
       Left = 96
@@ -214,7 +214,6 @@ object frmAutoRes: TfrmAutoRes
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 2
-      ExplicitWidth = 354
     end
     object edtDir: TEdit
       Left = 96
@@ -223,12 +222,29 @@ object frmAutoRes: TfrmAutoRes
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
-      ExplicitWidth = 354
+    end
+    object edtIcon: TEdit
+      Left = 96
+      Top = 111
+      Width = 272
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      TabOrder = 4
+    end
+    object Button1: TButton
+      Left = 374
+      Top = 108
+      Width = 71
+      Height = 24
+      Anchors = [akRight]
+      Caption = 'Browse...'
+      TabOrder = 5
+      OnClick = Button1Click
     end
   end
   object btnOk: TButton
     Left = 325
-    Top = 312
+    Top = 345
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -236,19 +252,17 @@ object frmAutoRes: TfrmAutoRes
     Default = True
     TabOrder = 3
     OnClick = btnOkClick
-    ExplicitLeft = 330
-    ExplicitTop = 316
+    ExplicitTop = 312
   end
   object btnClose: TButton
     Left = 409
-    Top = 312
+    Top = 343
     Width = 75
     Height = 25
     Anchors = []
     Caption = 'Close'
     TabOrder = 4
     OnClick = btnCloseClick
-    ExplicitLeft = 414
-    ExplicitTop = 316
+    ExplicitTop = 312
   end
 end
